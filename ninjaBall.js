@@ -1,12 +1,21 @@
 //init canvas and variable if needed
+var canvas = document.querySelector("#canvas");
+var ctx = canvas.getContext("2d");
 
+function randomNum(min,max){
+    var range = max-min;
+    var number = Math.floor(Math.random()*range);
+    return number+min
+}
 
 //create ninja object, includes draw ninja
-var rocket = {
-    x:50,
-    y:50,
-    mass:1000,
+var ninja = {
+    x:canvas.width/2,
+    y:canvas.width/2,
+    mass:500,
     thrust:20,
+    energy:100,
+    color:"red",
     acc:function(){
         return this.thrust/this.mass;
     },
@@ -31,11 +40,29 @@ var rocket = {
     wallbounce:function(){
         this.vx = -this.vx;
         this.vy = -this.vx;
+    },
+    draw:function(){
+        ctx.beginPath();
+        ctx.arc(ninja.x,ninja.y,5,0,Math.PI*2);
+        ctx.fillStyle = ninja.color;
+        ctx.fill();
+        ctx.closePath();
     }
+
 
 };
 
-//create level objects, includes draw level
+//create level objects, includes draw level***********
+
+var level = {
+    objects:[],
+    difficulty:1,
+    initObjects:function(){
+        var amount = 100*this.difficulty;
+
+        
+    }
+}
 
 
 //create engine object
@@ -59,3 +86,5 @@ function keyDown(e){
 
 
 //game loop
+
+ninja.draw();
