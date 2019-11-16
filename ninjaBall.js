@@ -168,9 +168,7 @@ function collision(element){
             ninja.energy = 100;
         }
     }
-    if(ninja.y<0){
-        ninja.wallbounce();
-    }
+    
 }
 
 function collisionCheck(){
@@ -184,6 +182,9 @@ function collisionCheck(){
         ninja.x=5;
         level.initObjects(false);
 
+    }
+    if(ninja.y<0){
+        ninja.wallbounce();
     }
     else if(ninja.y>canvas.height){
         //game over
