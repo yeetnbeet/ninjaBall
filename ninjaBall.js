@@ -1,6 +1,8 @@
 //init canvas and variable if needed
 var canvas = document.querySelector("#canvas");
 var ctx = canvas.getContext("2d");
+var platformWidth = 50;
+var platformAmount = 10;
 
 function randomNum(min,max){
     var range = max-min;
@@ -58,17 +60,26 @@ var level = {
     objects:[],
     difficulty:1,
     initObjects:function(){
-        var amount = 10;
         this.objects = [];
-        for(var i = 0; i < amount; i++){
+        for(var i = 0; i < platformAmount; i++){
             var object = {
                 x:randomNum(20,1000),
                 y:randomNum(3,450)
             }
             this.objects.push(object);
         }
-
+    },
+    draw:function(){
         
+        for(var i = 0; i< this.objects.length; i++){
+            
+            ctx.beginPath();
+            ctx.rect(this.objects[i].x,this.objects[i].y,platformWidth,2);
+            ctx.fillStyle = "black";
+            ctx.fill();
+            ctx.closePath();
+        }
+
     }
 }
 
@@ -96,3 +107,5 @@ function keyDown(e){
 //game loop
 
 ninja.draw();
+level.initObjects();
+level.draw();
