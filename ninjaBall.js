@@ -10,8 +10,8 @@ function randomNum(min,max){
 
 //create ninja object, includes draw ninja
 var ninja = {
-    x:canvas.width/2,
-    y:canvas.width/2,
+    x:10,
+    y:canvas.height-30,
     mass:500,
     thrust:20,
     energy:100,
@@ -58,7 +58,15 @@ var level = {
     objects:[],
     difficulty:1,
     initObjects:function(){
-        var amount = 100*this.difficulty;
+        var amount = 10;
+        this.objects = [];
+        for(var i = 0; i < amount; i++){
+            var object = {
+                x:randomNum(20,1000),
+                y:randomNum(3,450)
+            }
+            this.objects.push(object);
+        }
 
         
     }
