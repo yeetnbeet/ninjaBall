@@ -6,7 +6,8 @@ var platformAmount = 10;
 var stage = 0;
 var startX = 10
 var startY = canvas.height - 300;
-var startV = 0
+var startV = 0;
+var workCoef = 1 ;
 const refresh = 20;
 const gs = 1*refresh/1000
 const padding = 5
@@ -23,7 +24,7 @@ var ninja = {
     x:startX,
     y:startY,
     mass:100,
-    thrust:5,
+    thrust:10,
     energy:100,
     color:"red",
     acc:function(){
@@ -36,13 +37,19 @@ var ninja = {
         this.vx+=this.acc();}        
     },
     xGoleft:function(){
+        if(this.energy>0){
         this.vx-=this.acc();
+        }
     },
     yGoDown:function(){
+        if(this.energy>0){
         this.vy+=this.acc();
+        }
     },
     yGoUp:function(){
+        if(this.energy>0){
         this.vy-=this.acc();
+        }
     },
     update:function(){
         this.x+=this.vx;
@@ -64,6 +71,11 @@ var ninja = {
         ninja.y=startY;
         ninja.vx=startV;
         ninja.vy=startV;
+    },
+    useEnergy:function(){
+        if(this.energy>0){
+            this.energy-=workCoef;
+        }
     }
 
 
@@ -74,8 +86,14 @@ var ninja = {
 var level = {
     objects:[],
     difficulty:1,
-    initObjects:function(){
-        this.objects = [{x:0,y:canvas.height-30}];
+    initObjects:function(flag){
+        if(flag==true){
+            this.objects = [{x:0,y:canvas.height-30}];
+        }
+        else if(flag==false){
+            this.objects = [];
+        }
+        
         
         for(var i = 0; i < platformAmount; i++){
             var object = {
@@ -95,6 +113,12 @@ var level = {
             ctx.fill();
             ctx.closePath();
         }
+
+        ctx.beginPath();
+        ctx.rect(0,canvas.height-5,canvas.width*(ninja.energy/100),5)
+        ctx.fillStyle = "blue";
+        ctx.fill();
+        ctx.closePath();
 
     },
     gravity:function(){
@@ -118,17 +142,21 @@ function startGame(e){
 function keyDown(e){
     if(e.key == "Right" || e.key == "ArrowRight") {
         ninja.xGoRight();
+        ninja.useEnergy();
     }
     else if(e.key == "Left" || e.key == "ArrowLeft") {
         ninja.xGoleft();
+        ninja.useEnergy();
         console.log("l")
     }
     else if(e.key == " " || e.key == "Spacebar") {
         ninja.yGoUp();
+        ninja.useEnergy();
         console.log("Up");
     }
     else if(e.key == "Down" || e.key == "ArrowDown") {
         ninja.yGoDown();
+        ninja.useEnergy();
         console.log("down");
     }
 };
@@ -139,6 +167,9 @@ function collision(element){
             ninja.wallbounce();
             ninja.energy = 100;
         }
+    }
+    if(ninja.y<0){
+        ninja.wallbounce();
     }
 }
 
@@ -151,7 +182,7 @@ function collisionCheck(){
     if(ninja.x>canvas.width){
         stage+=1;
         ninja.x=5;
-        level.initObjects();
+        level.initObjects(false);
 
     }
     else if(ninja.y>canvas.height){
@@ -188,7 +219,7 @@ function displayStart(){
 
 //game loop
 function playGame(){
-    level.initObjects()
+    level.initObjects(true)
     var interval = setInterval(update,refresh)
     return interval
 }
