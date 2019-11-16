@@ -208,9 +208,9 @@ function displayStart(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.font = "30px Arial";
     ctx.fillStyle = "blue";
-    ctx.fillText("GAME OVER", 500, canvas.height/2);
+    ctx.fillText("GAME OVER", 400, canvas.height/2);
     var score = stage.toString();
-    ctx.fillText("SCORE: "+score,50,canvas.height/2 + 40)
+    ctx.fillText("SCORE: "+score,400,canvas.height/2 + 40)
     
     
 
@@ -226,6 +226,10 @@ function playGame(){
 
 
 document.addEventListener("keydown",keyDown);
+document.addEventListener('keyup', function(e){
+    if(e.keyCode == 13)
+      window.location.reload();
+  })
 
 var interval = playGame();
     
