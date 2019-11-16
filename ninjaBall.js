@@ -3,6 +3,14 @@ var canvas = document.querySelector("#canvas");
 var ctx = canvas.getContext("2d");
 var platformWidth = 50;
 var platformAmount = 10;
+var stage = 0;
+var startX = 10
+var startY = canvas.height - 300;
+var startV = 0
+const refresh = 20;
+const gs = 1*refresh/1000
+const padding = 5
+
 
 function randomNum(min,max){
     var range = max-min;
@@ -12,19 +20,20 @@ function randomNum(min,max){
 
 //create ninja object, includes draw ninja
 var ninja = {
-    x:10,
-    y:canvas.height-30,
-    mass:500,
-    thrust:20,
+    x:startX,
+    y:startY,
+    mass:100,
+    thrust:5,
     energy:100,
     color:"red",
     acc:function(){
         return this.thrust/this.mass;
     },
-    vx:0,
-    vy:0,
+    vx:startV,
+    vy:startV,
     xGoRight:function(){
-        this.vx+=this.acc();
+        if(this.energy>0){
+        this.vx+=this.acc();}        
     },
     xGoleft:function(){
         this.vx-=this.acc();
@@ -40,8 +49,8 @@ var ninja = {
         this.y+=this.vy;
     },
     wallbounce:function(){
-        this.vx = -this.vx;
-        this.vy = -this.vx;
+        //this.vx = -this.vx;
+        this.vy = -this.vy;
     },
     draw:function(){
         ctx.beginPath();
@@ -49,6 +58,12 @@ var ninja = {
         ctx.fillStyle = ninja.color;
         ctx.fill();
         ctx.closePath();
+    },
+    reset:function(){
+        ninja.x=startX;
+        ninja.y=startY;
+        ninja.vx=startV;
+        ninja.vy=startV;
     }
 
 
@@ -60,7 +75,8 @@ var level = {
     objects:[],
     difficulty:1,
     initObjects:function(){
-        this.objects = [];
+        this.objects = [{x:0,y:canvas.height-30}];
+        
         for(var i = 0; i < platformAmount; i++){
             var object = {
                 x:randomNum(20,1000),
@@ -80,32 +96,112 @@ var level = {
             ctx.closePath();
         }
 
+    },
+    gravity:function(){
+        ninja.vy+=gs
     }
+    
 }
 
 
+
+
 //create engine object
+function startGame(e){
+    if(e.key== " " || e.key == "Spacebar"){
+        document.removeEventListener("keydown",startGame);
+        ctx.clearRect(0,0,canvas.width,canvas.height)
+        ninja.reset()
+        return playGame()
+    }
+}
 function keyDown(e){
     if(e.key == "Right" || e.key == "ArrowRight") {
-        rocket.xGoRight();
+        ninja.xGoRight();
     }
     else if(e.key == "Left" || e.key == "ArrowLeft") {
-        rocket.xGoleft();
+        ninja.xGoleft();
         console.log("l")
     }
-    else if(e.key == "Up" || e.key == "ArrowUp") {
-        rocket.yGoUp();
+    else if(e.key == " " || e.key == "Spacebar") {
+        ninja.yGoUp();
         console.log("Up");
     }
     else if(e.key == "Down" || e.key == "ArrowDown") {
-        rocket.yGoDown();
+        ninja.yGoDown();
         console.log("down");
     }
 };
 
+function collision(element){
+    if(ninja.x >= element.x && ninja.x <=element.x + platformWidth){
+        if(ninja.y <= element.y + padding && ninja.y >= element.y - padding){
+            ninja.wallbounce();
+            ninja.energy = 100;
+        }
+    }
+}
+
+function collisionCheck(){
+    
+    level.objects.forEach(function(element){
+        collision(element);    
+    })
+
+    if(ninja.x>canvas.width){
+        stage+=1;
+        ninja.x=5;
+        level.initObjects();
+
+    }
+    else if(ninja.y>canvas.height){
+        //game over
+        clearInterval(interval);
+
+        displayStart()
+    }
+}
+
+
+function update(){
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+    level.gravity();
+    ninja.update();
+    collisionCheck();
+    ninja.draw()
+    level.draw()
+    
+};
+
+function displayStart(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "blue";
+    ctx.fillText("GAME OVER", 500, canvas.height/2);
+    var score = stage.toString();
+    ctx.fillText("SCORE: "+score,50,canvas.height/2 + 40)
+    
+    
+
+}
+
 
 //game loop
+function playGame(){
+    level.initObjects()
+    var interval = setInterval(update,refresh)
+    return interval
+}
 
-ninja.draw();
-level.initObjects();
-level.draw();
+
+document.addEventListener("keydown",keyDown);
+
+var interval = playGame();
+    
+
+
+
+
+
+
+
