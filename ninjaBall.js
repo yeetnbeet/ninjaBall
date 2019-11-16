@@ -2,13 +2,13 @@
 var canvas = document.querySelector("#canvas");
 var ctx = canvas.getContext("2d");
 var platformWidth = 50;
-var platformAmount = 10;
+var platformAmount = 15;
 var stage = 0;
 var startX = 10
 var startY = canvas.height - 300;
 var startV = 0;
 var workCoef = 1 ;
-const refresh = 20;
+const refresh = 10;
 const gs = 1*refresh/1000
 const padding = 5
 
